@@ -98,7 +98,7 @@ function register(router) {
       const a = shipping_address;
       const r = db.prepare(`INSERT INTO addresses (user_id, label, line1, line2, city, state, postal_code, country)
         VALUES (?,?,?,?,?,?,?,?)`)
-        .run(req.user ? req.user.id : null, a.label || 'Shipping', a.line1, a.line2 || '', a.city, a.state || '', a.postal_code, a.country);
+        .run(req.user ? req.user.id : 0, a.label || 'Shipping', a.line1, a.line2 || '', a.city, a.state || '', a.postal_code, a.country);
       addressId = r.lastInsertRowid;
     }
 
