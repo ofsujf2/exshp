@@ -86,7 +86,7 @@
       <table><thead><tr><th>Titolo</th><th>Tipo</th><th>Prezzo</th><th>Stock</th><th>Stato</th><th></th></tr></thead>
       <tbody>${products.map(p => `
         <tr>
-          <td class="flex items-center gap-1">${p.thumbnail ? `<img src="${p.thumbnail}" style="width:34px;height:34px;border-radius:8px;object-fit:cover;" onerror="this.style.display='none'">` : '<span style="width:34px;height:34px;border-radius:8px;background:var(--panel);display:inline-block;"></span>'}${p.title}</td>
+          <td class="flex items-center gap-1">${p.thumbnail ? `<img src="${p.thumbnail}" style="width:34px;height:34px;border-radius:8px;object-fit:cover;" onerror="this.outerHTML='<div style=width:34px;height:34px;border-radius:8px;background:var(--panel);display:inline-block;></div>'">` : '<div style="width:34px;height:34px;border-radius:8px;background:var(--panel);display:inline-block;"></div>'}${p.title}</td>
           <td><span class="badge ${p.type === 'digital' ? 'badge-blue' : 'badge-muted'}">${p.type}</span></td>
           <td>${ESH.formatPrice(p.discount_price ?? p.price)}</td>
           <td>${p.unlimited_stock ? 'Illimitato' : p.stock}</td>
