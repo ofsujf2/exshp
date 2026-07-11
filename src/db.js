@@ -33,7 +33,7 @@ CREATE TABLE IF NOT EXISTS users (
 
 CREATE TABLE IF NOT EXISTS addresses (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
-  user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+  user_id INTEGER,
   label TEXT, line1 TEXT NOT NULL, line2 TEXT, city TEXT NOT NULL,
   state TEXT, postal_code TEXT NOT NULL, country TEXT NOT NULL,
   is_default INTEGER NOT NULL DEFAULT 0
@@ -149,14 +149,14 @@ CREATE TABLE IF NOT EXISTS ticket_replies (
 
 CREATE TABLE IF NOT EXISTS wishlists (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
-  user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+  user_id INTEGER,
   product_id INTEGER NOT NULL REFERENCES products(id) ON DELETE CASCADE,
   UNIQUE(user_id, product_id)
 );
 
 CREATE TABLE IF NOT EXISTS wallet_transactions (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
-  user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+  user_id INTEGER,
   amount REAL NOT NULL, type TEXT NOT NULL, -- credit|debit
   reason TEXT, created_at TEXT NOT NULL DEFAULT (datetime('now'))
 );
