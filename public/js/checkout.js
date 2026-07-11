@@ -1,4 +1,4 @@
-// public/js/checkout.js - FIXED VERSION
+// public/js/checkout.js — ExecutiveShop
 (function(){
 var S={
   step:1,needsShipping:false,
@@ -6,40 +6,52 @@ var S={
   guest_email:"",payment_method:null,wallet_id:null,
   wallets:[],methods:[],coupon_code:"",discount:0,freeShipping:false,couponError:null
 };
+
+// Real payment icons (SVG logos, no emojis)
 var ICONS={
-  paypal_manual:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M7 4h7a4 4 0 0 1 4 4.6c-.5 3-2.9 4.9-6 4.9H9l-1.2 6.5"/><path d="M9.6 13.5H7"/></svg>',
-  revolut_manual:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 4h7a4.5 4.5 0 0 1 0 9H10l6 7"/><path d="M6 4v16"/></svg>',
-  crypto_manual:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="9"/><path d="M9.5 8.5h3.2a2 2 0 0 1 0 4H9.5m0 0h3.6a2 2 0 0 1 0 4H9.5m2-9v1m0 8v1"/></svg>'
+  paypal_manual: '<svg viewBox="0 0 24 24" fill="none"><path d="M7.5 5.5h5.5c2.5 0 4 1.5 4 3.5s-1.5 3.5-4 3.5h-3l-1 5H6l1.5-12z" fill="#009cde"/><path d="M17 13.5c0 2-1.5 3.5-3.5 3.5h-2l-1 4.5h-2.5l1.5-12h4c2 0 3.5 1.5 3.5 3.5z" fill="#012169"/></svg>',
+  revolut_manual: '<svg viewBox="0 0 24 24" fill="none"><rect width="24" height="24" rx="6" fill="#fff"/><path d="M6 6h6c2.5 0 4.5 2 4.5 4.5S14.5 15 12 15H8l-2 3V6z" fill="#0666EB"/><path d="M17 7l-2 2.5L17 12" stroke="#0666EB" stroke-width="2" fill="none"/></svg>',
+  crypto_manual: '<svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" fill="#F7931A"/><path d="M10.5 9h3c1 0 2 .8 2 1.8s-1 1.7-2 1.7h-3m0-3.5v3.5m1.5-4.5v1m0 6v1" stroke="#fff" stroke-width="1.5" fill="none"/></svg>'
 };
 var LABELS={paypal_manual:"PayPal",revolut_manual:"Revolut",crypto_manual:"Crypto"};
 var DESC={
-  paypal_manual:"You will receive the PayPal email to send payment. Manual verification by staff.",
-  revolut_manual:"You will receive the Revolut link to pay. Instant transfer.",
-  crypto_manual:"You will receive the wallet address. Choose BTC or LTC."
+  paypal_manual:"PayPal email payment. Manual verification by staff.",
+  revolut_manual:"Instant Revolut transfer. Manual verification by staff.",
+  crypto_manual:"Pay with Bitcoin or Litecoin. Manual verification by staff."
 };
 var NET={BTC:"Bitcoin",LTC:"Litecoin"};
 
 async function init(){
   var el=document.getElementById("stepContent");if(!el)return;
-  if(ESH.cart.count()===0){el.innerHTML='<div class="glass checkout-panel text-center"><h3>Your cart is empty</h3><p class="text-muted mt-1">Add some products.</p><a href="/products.html" class="btn btn-primary mt-3">Browse products</a></div>';document.getElementById("summaryCard").innerHTML="";return;}
+  if(ESH.cart.count()===0){
+    el.innerHTML='<div class="glass checkout-panel text-center"><h3>Your cart is empty</h3><p class="text-muted mt-1">Add some products.</p><a href="/products.html" class="btn btn-primary mt-3">Browse products</a></div>';
+    document.getElementById("summaryCard").innerHTML="";return;
+  }
   S.needsShipping=ESH.cart.hasPhysical();S.step=1;
-  var a=await ESH.api("/api/payment-methods");if(a.ok)S.methods=a.data.methods;
-  var b=await ESH.api("/api/wallets/public");if(b.ok)S.wallets=b.data.wallets.filter(function(w){return w.network==="BTC"||w.network==="LTC";});
+  try{var a=await ESH.api("/api/payment-methods");if(a.ok)S.methods=a.data.methods;}catch(e){}
+  try{var b=await ESH.api("/api/wallets/public");if(b.ok)S.wallets=b.data.wallets.filter(function(w){return w.network==="BTC"||w.network==="LTC";});}catch(e){}
   render();
 }
 
 function renderSteps(){
-  var steps=["Cart"];if(S.needsShipping)steps.push("Shipping");steps.push("Payment");
+  var steps=["Cart"];
+  if(S.needsShipping||!window.__eshUser)steps.push("Details");
+  steps.push("Payment");
   var h='<div class="checkout-steps">';
   for(var i=0;i<steps.length;i++){var n=i+1,cls=n<S.step?"done":n===S.step?"active":"";h+='<div class="checkout-step '+cls+'"><span class="num">'+(n<S.step?"&#10003;":n)+'</span>'+steps[i]+'</div>';}
   h+='</div>';return h;
 }
 
+function hasDetailStep(){
+  return S.needsShipping || !window.__eshUser;
+}
+
 function render(){
   document.querySelector(".checkout-steps-wrap").innerHTML=renderSteps();
   var el=document.getElementById("stepContent");
+  var hasDetail=hasDetailStep();
   if(S.step===1)el.innerHTML=renderCart();
-  else if(S.needsShipping&&S.step===2)el.innerHTML=renderShipping();
+  else if(hasDetail&&S.step===2)el.innerHTML=renderDetails();
   else el.innerHTML=renderPayment();
   renderSummary();bindEvents();
 }
@@ -50,23 +62,38 @@ function renderCart(){
   h+='<div class="flex justify-between mt-2"><a href="/products.html" class="btn btn-ghost btn-sm">&larr; Continue shopping</a><button class="btn btn-primary" id="btnNext">Continue</button></div></div>';return h;
 }
 
-function renderShipping(){
-  var s=S.shipping,h='<div class="glass checkout-panel"><h3>Shipping address</h3>';
-  if(!window.__eshUser)h+='<div class="field"><label>Email (guest checkout)</label><input id="guestEmail" type="email" placeholder="you@email.com" value="'+esc(S.guest_email)+'"></div>';
-  h+='<div class="form-row"><div class="field"><label>Address *</label><input id="line1" value="'+esc(s.line1)+'" placeholder="123 Main St"></div><div class="field"><label>Apt/Suite</label><input id="line2" value="'+esc(s.line2)+'"></div></div><div class="form-row"><div class="field"><label>City *</label><input id="city" value="'+esc(s.city)+'"></div><div class="field"><label>State</label><input id="state" value="'+esc(s.state)+'"></div></div><div class="form-row"><div class="field"><label>Postal code *</label><input id="postal_code" value="'+esc(s.postal_code)+'"></div><div class="field"><label>Country</label><input id="country" value="'+esc(s.country)+'"></div></div>';
-  h+='<div class="flex justify-between mt-2"><button class="btn btn-ghost btn-sm" id="btnBack">&larr; Back</button><button class="btn btn-primary" id="btnNext">Continue to payment</button></div></div>';return h;
+function renderDetails(){
+  var h='<div class="glass checkout-panel"><h3>';
+  if(S.needsShipping&&!window.__eshUser)h+='Email & Shipping';
+  else if(S.needsShipping)h+='Shipping address';
+  else h+='Your email';
+  h+='</h3>';
+  
+  // Email field ALWAYS if not logged in
+  if(!window.__eshUser){
+    h+='<div class="field"><label>Email * (required)</label><input id="guestEmail" type="email" placeholder="you@email.com" value="'+esc(S.guest_email)+'"></div>';
+  }
+  
+  if(S.needsShipping){
+    var s=S.shipping;
+    h+='<div class="form-row"><div class="field"><label>Address *</label><input id="line1" value="'+esc(s.line1)+'" placeholder="123 Main St"></div><div class="field"><label>Apt/Suite</label><input id="line2" value="'+esc(s.line2)+'"></div></div>';
+    h+='<div class="form-row"><div class="field"><label>City *</label><input id="city" value="'+esc(s.city)+'"></div><div class="field"><label>State</label><input id="state" value="'+esc(s.state)+'"></div></div>';
+    h+='<div class="form-row"><div class="field"><label>Postal code *</label><input id="postal_code" value="'+esc(s.postal_code)+'"></div><div class="field"><label>Country</label><input id="country" value="'+esc(s.country)+'"></div></div>';
+  }
+  
+  h+='<div class="flex justify-between mt-2"><button class="btn btn-ghost btn-sm" id="btnBack">&larr; Back</button><button class="btn btn-primary" id="btnNext">Continue to payment</button></div></div>';
+  return h;
 }
 
 function renderPayment(){
-  // MOSTRA SEMPRE I 3 METODI, anche se l'API non li restituisce
   var available=["paypal_manual","revolut_manual","crypto_manual"];
   var detail="";
   if(S.payment_method==="crypto_manual"){
     detail='<div class="wallet-options">';
     for(var i=0;i<S.wallets.length;i++){var w=S.wallets[i];detail+='<div class="wallet-option '+(S.wallet_id===w.id?"selected":"")+'" data-wallet="'+w.id+'"><div><strong>'+(NET[w.network]||w.network)+'</strong><div class="net">Min. '+ESH.formatPrice(w.min_amount)+'</div></div><span class="badge badge-blue">'+w.network+'</span></div>';}
-    if(S.wallets.length===0)detail+='<p class="text-muted">Loading wallets...</p>';detail+='</div>';
+    detail+='</div>';
   }else if(S.payment_method){detail='<div class="pay-detail">'+(DESC[S.payment_method]||"")+'</div>';}
-  var h='<div class="glass checkout-panel"><h3>Payment method</h3><p class="text-muted mb-1" style="font-size:0.85rem;">All payments manually verified by staff.</p><div class="pay-methods">';
+  var h='<div class="glass checkout-panel"><h3>Payment method</h3><p class="text-muted mb-1" style="font-size:0.85rem;">Manual verification by staff.</p><div class="pay-methods">';
   for(var i=0;i<available.length;i++){var c=available[i];h+='<div class="pay-method '+(S.payment_method===c?"selected":"")+'" data-method="'+c+'">'+(ICONS[c]||"")+'<span>'+(LABELS[c]||c)+'</span>'+(c==="crypto_manual"?"<small>BTC &middot; LTC</small>":"")+'</div>';}
   h+='</div><div id="payDetail">'+detail+'</div><div class="mt-2"><div class="coupon-row"><input id="couponInput" placeholder="Discount code" value="'+esc(S.coupon_code)+'"><button class="btn btn-ghost" id="applyCoupon">Apply</button></div>';
   if(S.couponError)h+='<div class="alert alert-danger mt-1">'+S.couponError+'</div>';if(S.discount>0)h+='<div class="alert alert-success mt-1">Discount: -'+ESH.formatPrice(S.discount)+'</div>';
@@ -86,7 +113,20 @@ function renderSummary(){
 function bindEvents(){
   document.querySelectorAll("[data-qty]").forEach(function(el){el.onchange=function(){ESH.cart.updateQty(Number(this.dataset.qty),Number(this.value));S.needsShipping=ESH.cart.hasPhysical();render();};});
   document.querySelectorAll("[data-remove]").forEach(function(el){el.onclick=function(){ESH.cart.remove(Number(this.dataset.remove));S.needsShipping=ESH.cart.hasPhysical();if(ESH.cart.count()===0)return init();render();};});
-  var n=document.getElementById("btnNext");if(n)n.onclick=function(){if(S.step===1){S.step=S.needsShipping?2:3;}else if(S.step===2){S.shipping={line1:val("line1"),line2:val("line2"),city:val("city"),state:val("state"),postal_code:val("postal_code"),country:val("country")};var e=document.getElementById("guestEmail");if(e)S.guest_email=e.value;if(!S.shipping.line1||!S.shipping.city||!S.shipping.postal_code){ESH.toast("Fill all required fields.","error");return;}S.step=3;}render();};
+  var n=document.getElementById("btnNext");if(n)n.onclick=function(){
+    var hasDetail=hasDetailStep();
+    if(S.step===1&&hasDetail){S.step=2;}
+    else if(S.step===2&&hasDetail){
+      var emailEl=document.getElementById("guestEmail");if(emailEl)S.guest_email=emailEl.value.trim();
+      if(!window.__eshUser&&!S.guest_email){ESH.toast("Email is required.","error");return;}
+      if(S.needsShipping){
+        S.shipping={line1:val("line1"),line2:val("line2"),city:val("city"),state:val("state"),postal_code:val("postal_code"),country:val("country")};
+        if(!S.shipping.line1||!S.shipping.city||!S.shipping.postal_code){ESH.toast("Fill all required fields.","error");return;}
+      }
+      S.step=3;
+    }else if(S.step===1&&!hasDetail){S.step=3;}
+    render();
+  };
   var b=document.getElementById("btnBack");if(b)b.onclick=function(){S.step=Math.max(1,S.step-1);render();};
   document.querySelectorAll("[data-method]").forEach(function(el){el.onclick=function(){S.payment_method=this.dataset.method;S.wallet_id=null;render();};});
   document.querySelectorAll("[data-wallet]").forEach(function(el){el.onclick=function(){S.wallet_id=Number(this.dataset.wallet);render();};});
@@ -97,7 +137,8 @@ function bindEvents(){
 function val(id){var el=document.getElementById(id);return el?el.value.trim():"";}
 
 async function submitOrder(){
-  if(S.payment_method==="crypto_manual"&&!S.wallet_id)return ESH.toast("Select a cryptocurrency.","error");
+  if(!window.__eshUser&&!S.guest_email){return ESH.toast("Email is required.","error");}
+  if(S.payment_method==="crypto_manual"&&!S.wallet_id){return ESH.toast("Select a cryptocurrency.","error");}
   var btn=document.getElementById("confirmOrder");btn.disabled=true;btn.innerHTML='<span class="spinner"></span> Processing...';
   var r=await ESH.api("/api/checkout",{method:"POST",body:{items:ESH.cart.get().map(function(i){return{product_id:i.product_id,quantity:i.qty};}),payment_method:S.payment_method,wallet_id:S.payment_method==="crypto_manual"?S.wallet_id:null,coupon_code:S.coupon_code||null,guest_email:S.guest_email||undefined,shipping_address:S.needsShipping?S.shipping:undefined}});
   if(!r.ok){ESH.toast(r.error,"error");btn.disabled=false;btn.textContent="Confirm & pay";return;}ESH.cart.clear();
