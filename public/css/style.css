@@ -400,3 +400,11 @@ footer{ border-top:1px solid var(--border-soft); padding:4rem 0 2rem; margin-top
 @media (prefers-reduced-motion: reduce){
   *{ animation-duration:0.001ms !important; transition-duration:0.001ms !important; }
 }
+
+/* Mobile cart fix */
+@media (max-width: 640px) {
+  .nav-actions { display: flex !important; position: absolute; right: 1rem; top: 50%; transform: translateY(-50%); }
+  .nav-links { display: none; }
+  .menu-toggle { display: flex; }
+  .navbar { justify-content: flex-start; padding-right: 5rem; }
+}
