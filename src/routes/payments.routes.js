@@ -49,12 +49,12 @@ function buildInstructions(order) {
       currency,
       order_number,
       steps: [
-        `Send ${total} ${currency} via PayPal to:`,
-        `32swaroski@gmail.com`,
-        `Reference: ${order_number}`,
-        `After payment, send the receipt to support@fly.dev`
+        'Send ' + total + ' ' + currency + ' via PayPal to:',
+        '32swaroski@gmail.com',
+        'Reference: ' + order_number,
+        'After payment, send the receipt to support@fly.dev'
       ],
-      note: 'Manual verification by staff. You\'ll receive confirmation via email.'
+      note: 'Manual verification by staff. You will receive confirmation via email.'
     };
   }
 
@@ -67,10 +67,10 @@ function buildInstructions(order) {
       currency,
       order_number,
       steps: [
-        `Click the link to pay:`,
-        `https://revolut.me/exshop`,
-        `Amount: ${total} ${currency}`,
-        `Enter "${order_number}" in the description`
+        'Click the link to pay:',
+        'https://revolut.me/exshop',
+        'Amount: ' + total + ' ' + currency,
+        'Enter "' + order_number + '" in the description'
       ],
       note: 'Instant payment. Manual verification by staff.'
     };
@@ -89,12 +89,12 @@ function buildInstructions(order) {
       currency,
       order_number,
       steps: [
-        `Send the equivalent of ${total} ${currency} in ${wallet.network} to:`,
-        `Address: ${wallet.address}`,
-        `Include "${order_number}" in the transaction if possible`,
-        `Or send the tx hash to support@fly.dev`
+        'Send the equivalent of ' + total + ' ' + currency + ' in ' + wallet.network + ' to:',
+        'Address: ' + wallet.address,
+        'Include "' + order_number + '" in the transaction if possible',
+        'Or send the tx hash to support@fly.dev'
       ],
-      note: `Wait for confirmations on the ${wallet.network} blockchain. Manual verification by staff.`
+      note: 'Wait for confirmations on the ' + wallet.network + ' blockchain. Manual verification by staff.'
     };
   }
 
