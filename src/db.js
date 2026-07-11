@@ -308,18 +308,13 @@ function seedIfEmpty() {
 
   const walletStmt = db.prepare(`INSERT INTO wallets (name, network, address, min_amount, max_amount, auto_verify, status)
     VALUES (?,?,?,?,?,?,?)`);
-  walletStmt.run('Bitcoin', 'BTC', 'bc1q_demo_address_0000000000000000000', 10, null, 0, 'active');
-  walletStmt.run('Litecoin', 'LTC', 'ltc1q_demo_address_0000000000000000000', 5, null, 0, 'active');
-  walletStmt.run('USDT (TRC20)', 'TRC20', 'T_demo_usdt_trc20_address_000000000', 5, null, 0, 'active');
-  walletStmt.run('Ethereum', 'ETH', '0xDEMO0000000000000000000000000000000000', 10, null, 0, 'active');
+  walletStmt.run('Bitcoin', 'BTC', 'bc1qqkl35zull7py2zt8fvugxh0hs6elarxuzwcmka', 10, null, 0, 'active');
+  walletStmt.run('Litecoin', 'LTC', 'LSEjnWc4NTWz9s3Sy7KsNFPk6DakAJAkaX', 5, null, 0, 'active');
 
   const gwStmt = db.prepare(`INSERT INTO payment_gateways (code, name, public_key, secret_key, status) VALUES (?,?,?,?,?)`);
-  gwStmt.run('stripe', 'Carta (Stripe)', 'pk_test_demo', '', 'enabled');
-  gwStmt.run('paypal', 'PayPal', 'client_id_demo', '', 'enabled');
-  gwStmt.run('revolut', 'Revolut Pay', 'pub_demo_revolut', '', 'enabled');
-  gwStmt.run('coinbase', 'Coinbase Commerce', '', 'api_key_demo', 'disabled');
-  gwStmt.run('bank_transfer', 'Bonifico Bancario', '', '', 'enabled');
-  gwStmt.run('crypto_wallet', 'Portafoglio Cripto', '', '', 'enabled');
+  gwStmt.run('paypal_manual', 'PayPal', '', '', 'enabled');
+  gwStmt.run('revolut_manual', 'Revolut', '', '', 'enabled');
+  gwStmt.run('crypto_manual', 'Crypto (BTC/LTC)', '', '', 'enabled');
 
   console.log('Seed completato.');
   console.log('Admin login: admin@executiveshop.test / Admin#2026!');
