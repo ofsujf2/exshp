@@ -86,7 +86,7 @@
       <table><thead><tr><th>Titolo</th><th>Tipo</th><th>Prezzo</th><th>Stock</th><th>Stato</th><th></th></tr></thead>
       <tbody>${products.map(p => `
         <tr>
-          <td class="flex items-center gap-1">${p.thumbnail ? `<img src="${p.thumbnail}" style="width:34px;height:34px;border-radius:8px;object-fit:cover;">` : ''}${p.title}</td>
+          <td class="flex items-center gap-1">${p.thumbnail ? `<img src="${p.thumbnail}" style="width:34px;height:34px;border-radius:8px;object-fit:cover;" onerror="this.style.display='none'">` : '<span style="width:34px;height:34px;border-radius:8px;background:var(--panel);display:inline-block;"></span>'}${p.title}</td>
           <td><span class="badge ${p.type === 'digital' ? 'badge-blue' : 'badge-muted'}">${p.type}</span></td>
           <td>${ESH.formatPrice(p.discount_price ?? p.price)}</td>
           <td>${p.unlimited_stock ? 'Illimitato' : p.stock}</td>
@@ -167,7 +167,7 @@
       const up = await ESH.api('/api/admin/upload', { method: 'POST', body: { data_url: dataUrl } });
       if (!up.ok) return ESH.toast(up.error, 'error');
       document.getElementById('mThumbnail').value = up.data.url;
-      document.getElementById('mImagePreview').innerHTML = `<img src="${up.data.url}" style="width:90px;height:90px;border-radius:10px;object-fit:cover;">`;
+      document.getElementById('mImagePreview').innerHTML = `<img src="${up.data.url}" style="width:90px;height:90px;border-radius:10px;object-fit:cover;" onerror="this.style.display='none'">`;
       ESH.toast('Immagine caricata.', 'success');
     });
 
@@ -178,7 +178,7 @@
         type: val('mType'), price: Number(val('mPrice')) || 0,
         discount_price: val('mDiscount') ? Number(val('mDiscount')) : null,
         stock: Number(val('mStock')) || 0, unlimited_stock: document.getElementById('mUnlimited').checked,
-        thumbnail: val('mThumbnail'), delivery_type: val('mDelivery'), status: val('mStatus'),
+        thumbnail: val('mThumbnail') || null, delivery_type: val('mDelivery'), status: val('mStatus'),
         featured: document.getElementById('mFeatured').checked, trending: document.getElementById('mTrending').checked,
         new_arrival: document.getElementById('mNew').checked
       };

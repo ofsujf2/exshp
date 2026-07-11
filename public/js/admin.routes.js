@@ -90,7 +90,7 @@ function register(router) {
       discount_price: b.discount_price ?? existing.discount_price, cost: b.cost ?? existing.cost,
       sku: b.sku ?? existing.sku, stock: b.stock ?? existing.stock,
       unlimited_stock: b.unlimited_stock ?? existing.unlimited_stock,
-      thumbnail: b.thumbnail ?? existing.thumbnail,
+      thumbnail: body.thumbnail || null,
       gallery: b.gallery ? JSON.stringify(b.gallery) : existing.gallery,
       tags: b.tags ? JSON.stringify(b.tags) : existing.tags,
       specifications: b.specifications ? JSON.stringify(b.specifications) : existing.specifications,
