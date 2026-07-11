@@ -1,49 +1,73 @@
 <!DOCTYPE html>
-<html lang="it">
+<html lang="en">
 <head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Accedi — ExecutiveShop</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Login — ExecutiveShop</title>
 <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
 <div id="app-nav"></div>
+
 <div class="auth-shell">
-  <div class="glass-strong auth-card">
-    <h2>Bentornato</h2>
-    <p class="text-muted mb-2">Accedi al tuo account ExecutiveShop</p>
-    <div id="formAlert"></div>
-    <form id="loginForm">
-      <div class="field"><label>Email</label><input type="email" id="email" required></div>
-      <div class="field"><label>Password</label><input type="password" id="password" required></div>
-      <div class="flex justify-between items-center mb-2">
-        <label class="checkbox-row"><input type="checkbox" id="remember"> Ricordami</label>
-        <a href="/forgot-password.html" style="font-size:0.82rem; color:var(--blue-2);">Password dimenticata?</a>
-      </div>
-      <button class="btn btn-primary btn-block" type="submit">Accedi</button>
-    </form>
-    <p class="auth-switch">Non hai un account? <a href="/register.html">Registrati</a></p>
-    <hr class="divider">
-    <p class="text-muted" style="font-size:0.78rem; text-align:center;">Demo:  /  &middot;  / </p>
+  <div class="glass auth-card">
+    <h2>Welcome back</h2>
+    <p class="text-muted" style="margin-bottom:1.5rem;">Sign in to your account</p>
+    
+    <div style="background:var(--panel); border:1px solid var(--border); border-radius:var(--radius-sm); padding:0.8rem 1rem; margin-bottom:1.5rem; text-align:center;">
+      <span style="color:var(--success); font-weight:700; font-size:1.1rem;" id="visitorCount">821</span>
+      <span style="color:var(--muted); font-size:0.85rem;"> people are visiting this site</span>
+    </div>
+
+    <div class="field">
+      <label>Email</label>
+      <input id="email" type="email" placeholder="you@email.com" autocomplete="email">
+    </div>
+    <div class="field">
+      <label>Password</label>
+      <input id="password" type="password" placeholder="Your password" autocomplete="current-password">
+    </div>
+    <button class="btn btn-primary btn-block mt-2" id="btnLogin">Sign in</button>
+
+    <div class="mt-2" style="display:flex; justify-content:space-between; font-size:0.82rem;">
+      <a href="/forgot-password.html" style="color:var(--blue-2);">Forgot password?</a>
+      <a href="/register.html" style="color:var(--blue-2);">Create account</a>
+    </div>
   </div>
 </div>
+
 <div id="app-footer"></div>
+
 <script src="/js/api.js"></script>
 <script src="/js/store.js"></script>
 <script src="/js/layout.js"></script>
 <script>
-  ESH.layout('/login.html');
-  document.getElementById('loginForm').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const btn = e.target.querySelector('button');
+  ESH.layout('/login.html').then(function(user) {
+    window.__eshUser = user;
+  });
+
+  // Simula contatore visitatori (random tra 800 e 850)
+  var count = Math.floor(Math.random() * 51) + 800;
+  document.getElementById("visitorCount").textContent = count;
+
+  document.getElementById("btnLogin").addEventListener("click", async function() {
+    var email = document.getElementById("email").value.trim();
+    var password = document.getElementById("password").value.trim();
+    if (!email || !password) return ESH.toast("Please fill in all fields.", "error");
+    
+    var btn = document.getElementById("btnLogin");
     btn.disabled = true;
-    const r = await ESH.api('/api/auth/login', { method: 'POST', body: {
-      email: document.getElementById('email').value,
-      password: document.getElementById('password').value,
-      remember: document.getElementById('remember').checked
-    }});
-    btn.disabled = false;
-    if (!r.ok) { document.getElementById('formAlert').innerHTML = `<div class="alert alert-danger mb-2">${r.error}</div>`; return; }
-    location.href = r.data.user.role === 'admin' ? '/admin/' : '/dashboard.html';
+    btn.innerHTML = '<span class="spinner"></span> Signing in...';
+    
+    var r = await ESH.api("/api/auth/login", { method: "POST", body: { email: email, password: password } });
+    if (!r.ok) {
+      ESH.toast(r.error || "Login failed", "error");
+      btn.disabled = false;
+      btn.textContent = "Sign in";
+      return;
+    }
+    localStorage.setItem("esh_token", r.data.token);
+    window.location.href = "/dashboard.html";
   });
 </script>
 </body>
