@@ -9,9 +9,9 @@ var S={
 
 // Real payment icons (SVG logos, no emojis)
 var ICONS={
-  paypal_manual: '<span style="font-size:1.8rem;">&#127991;</span>',
-  revolut_manual: '<span style="font-size:1.8rem;">&#128179;</span>',
-  crypto_manual: '<span style="font-size:1.8rem;">&#8383;</span>'
+  paypal_manual: '<span style="font-weight:700;color:#009cde;">P</span>'<span style="font-size:1.8rem;">&#127991;</span>',
+  revolut_manual: '<span style="font-weight:700;color:#0666EB;">R</span>'<span style="font-size:1.8rem;">&#128179;</span>',
+  crypto_manual: '<span style="font-weight:700;color:#F7931A;">B</span>'<span style="font-size:1.8rem;">&#8383;</span>'
 };
 var LABELS={paypal_manual:"PayPal",revolut_manual:"Revolut",crypto_manual:"Crypto"};
 var DESC={
