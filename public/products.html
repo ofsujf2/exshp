@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Prodotti — ExecutiveShop</title>
+<link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+<div id="app-nav"></div>
+<div class="page-header container">
+  <div class="breadcrumbs"><a href="/">Home</a> / Prodotti</div>
+  <h1>Catalogo</h1>
+</div>
+
+<div class="container section-sm" style="padding-top:0;">
+  <div class="flex gap-2 mb-3" style="flex-wrap:wrap;">
+    <select id="filterCategory"><option value="">Tutte le categorie</option></select>
+    <select id="filterType">
+      <option value="">Tutti i tipi</option>
+      <option value="digital">Digitale</option>
+      <option value="physical">Fisico</option>
+    </select>
+    <input id="filterSearch" placeholder="Cerca un prodotto..." style="max-width:280px;">
+  </div>
+  <div class="grid grid-4" id="productGrid">
+    <div class="skeleton" style="height:280px;"></div><div class="skeleton" style="height:280px;"></div>
+    <div class="skeleton" style="height:280px;"></div><div class="skeleton" style="height:280px;"></div>
+  </div>
+</div>
+
+<div id="app-footer"></div>
+<script src="/js/api.js"></script>
+<script src="/js/store.js"></script>
+<script src="/js/layout.js"></script>
+<script>
+  ESH.layout('/products.html');
+  const PRODUCT_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M21 8l-9-5-9 5 9 5 9-5Z"/><path d="M3 8v8l9 5 9-5V8"/><path d="M12 13v8"/></svg>';
+
+  function productCard(p) {
+    const price = p.discount_price ?? p.price;
+    return `
+    <a href="/product.html?slug=${p.slug}" class="glass product-card tilt">
+      <div class="product-thumb">${PRODUCT_ICON}</div>
+      <div class="product-info">
+        <h4>${p.title}</h4>
+        <div class="product-meta">
+          <span class="price">${p.discount_price ? `<span class="old">${ESH.formatPrice(p.price)}</span>` : ''}${ESH.formatPrice(price)}</span>
+          <span class="badge ${p.type === 'digital' ? 'badge-blue' : 'badge-muted'}">${p.type === 'digital' ? 'Digitale' : 'Fisico'}</span>
+        </div>
+      </div>
+    </a>`;
+  }
+
+  const params = new URLSearchParams(location.search);
+  const state = { category: params.get('category') || '', type: params.get('type') || '', q: '', featured: params.get('featured'), new_arrival: params.get('new_arrival') };
+
+  async function loadCategories() {
+    const r = await ESH.api('/api/categories');
+    if (!r.ok) return;
+    const sel = document.getElementById('filterCategory');
+    r.data.categories.forEach(c => {
+      const opt = document.createElement('option');
+      opt.value = c.slug; opt.textContent = c.name;
+      if (c.slug === state.category) opt.selected = true;
+      sel.appendChild(opt);
+    });
+  }
+
+  async function loadProducts() {
+    const qs = new URLSearchParams();
+    if (state.category) qs.set('category', state.category);
+    if (state.type) qs.set('type', state.type);
+    if (state.q) qs.set('q', state.q);
+    if (state.featured) qs.set('featured', '1');
+    if (state.new_arrival) qs.set('new_arrival', '1');
+    const r = await ESH.api('/api/products?' + qs.toString());
+    const grid = document.getElementById('productGrid');
+    if (!r.ok) { grid.innerHTML = '<p class="text-muted">Errore nel caricamento dei prodotti.</p>'; return; }
+    grid.innerHTML = r.data.products.map(productCard).join('') || '<p class="text-muted">Nessun prodotto trovato.</p>';
+  }
+
+  document.getElementById('filterCategory').addEventListener('change', e => { state.category = e.target.value; loadProducts(); });
+  document.getElementById('filterType').addEventListener('change', e => { state.type = e.target.value; loadProducts(); });
+  let searchTimer;
+  document.getElementById('filterSearch').addEventListener('input', e => {
+    clearTimeout(searchTimer);
+    searchTimer = setTimeout(() => { state.q = e.target.value; loadProducts(); }, 300);
+  });
+
+  loadCategories(); loadProducts();
+</script>
+</body>
+</html>

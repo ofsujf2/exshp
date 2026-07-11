@@ -1,0 +1,16 @@
+{
+  "name": "executiveshop",
+  "version": "1.0.0",
+  "description": "ExecutiveShop - piattaforma eCommerce (Digital + Physical Goods) con dashboard admin completa",
+  "main": "server.js",
+  "type": "commonjs",
+  "engines": {
+    "node": ">=22.5.0"
+  },
+  "scripts": {
+    "start": "node server.js",
+    "seed": "node src/db.js --seed"
+  },
+  "dependencies": {},
+  "license": "UNLICENSED"
+}

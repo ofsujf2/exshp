@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Registrati — ExecutiveShop</title>
+<link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+<div id="app-nav"></div>
+<div class="auth-shell">
+  <div class="glass-strong auth-card">
+    <h2>Crea il tuo account</h2>
+    <p class="text-muted mb-2">Bastano 30 secondi</p>
+    <div id="formAlert"></div>
+    <form id="registerForm">
+      <div class="field"><label>Nome</label><input id="name" required></div>
+      <div class="field"><label>Email</label><input type="email" id="email" required></div>
+      <div class="field"><label>Password</label><input type="password" id="password" required minlength="8"><span class="hint">Almeno 8 caratteri.</span></div>
+      <button class="btn btn-primary btn-block" type="submit">Crea account</button>
+    </form>
+    <p class="auth-switch">Hai gia un account? <a href="/login.html">Accedi</a></p>
+  </div>
+</div>
+<div id="app-footer"></div>
+<script src="/js/api.js"></script>
+<script src="/js/store.js"></script>
+<script src="/js/layout.js"></script>
+<script>
+  ESH.layout('/register.html');
+  document.getElementById('registerForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const btn = e.target.querySelector('button');
+    btn.disabled = true;
+    const r = await ESH.api('/api/auth/register', { method: 'POST', body: {
+      name: document.getElementById('name').value,
+      email: document.getElementById('email').value,
+      password: document.getElementById('password').value
+    }});
+    btn.disabled = false;
+    if (!r.ok) { document.getElementById('formAlert').innerHTML = `<div class="alert alert-danger mb-2">${r.error}</div>`; return; }
+    ESH.toast(r.data.message, 'success');
+    location.href = '/dashboard.html';
+  });
+</script>
+</body>
+</html>

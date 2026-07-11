@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Prodotto — ExecutiveShop</title>
+<link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+<div id="app-nav"></div>
+<div class="container section" style="padding-top:6.5rem;" id="productRoot">
+  <div class="skeleton" style="height:420px;"></div>
+</div>
+<div id="app-footer"></div>
+<script src="/js/api.js"></script>
+<script src="/js/store.js"></script>
+<script src="/js/layout.js"></script>
+<script>
+  ESH.layout('/products.html');
+  const PRODUCT_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><path d="M21 8l-9-5-9 5 9 5 9-5Z"/><path d="M3 8v8l9 5 9-5V8"/><path d="M12 13v8"/></svg>';
+
+  const slug = new URLSearchParams(location.search).get('slug');
+
+  async function load() {
+    const root = document.getElementById('productRoot');
+    if (!slug) { root.innerHTML = '<p class="text-muted">Prodotto non specificato.</p>'; return; }
+    const r = await ESH.api('/api/products/' + slug);
+    if (!r.ok) { root.innerHTML = `<div class="glass" style="padding:2rem;"><h2>Prodotto non trovato</h2><a href="/products.html" class="btn btn-primary mt-2">Torna al catalogo</a></div>`; return; }
+    const p = r.data.product;
+    const price = p.discount_price ?? p.price;
+
+    root.innerHTML = `
+    <div class="breadcrumbs"><a href="/">Home</a> / <a href="/products.html">Prodotti</a> / ${p.title}</div>
+    <div class="hero-grid mt-2" style="align-items:flex-start;">
+      <div class="glass" style="padding:2.4rem; aspect-ratio:1/1; display:flex; align-items:center; justify-content:center;">
+        <div style="width:50%; color:var(--blue-2);">${PRODUCT_ICON}</div>
+      </div>
+      <div>
+        <span class="badge ${p.type === 'digital' ? 'badge-blue' : 'badge-muted'}">${p.type === 'digital' ? 'Bene digitale' : 'Prodotto fisico'}</span>
+        <h1 class="mt-1">${p.title}</h1>
+        <div class="flex items-center gap-2 mt-1">
+          <span class="price" style="font-size:1.6rem;">${p.discount_price ? `<span class="old">${ESH.formatPrice(p.price)}</span>` : ''}${ESH.formatPrice(price)}</span>
+          ${r.data.rating_average ? `<span class="badge badge-warning">&#9733; ${r.data.rating_average.toFixed(1)} (${r.data.rating_count})</span>` : ''}
+        </div>
+        <p class="text-muted mt-2">${p.description || ''}</p>
+        ${p.specifications && Object.keys(p.specifications).length ? `
+          <div class="glass mt-2" style="padding:1.2rem;">
+            ${Object.entries(p.specifications).map(([k, v]) => `<div class="flex justify-between" style="padding:0.4rem 0; font-size:0.87rem;"><span class="text-muted">${k}</span><span>${v}</span></div>`).join('')}
+          </div>` : ''}
+        <div class="flex gap-1 mt-3">
+          <button class="btn btn-primary" id="addToCart">Aggiungi al carrello</button>
+          <button class="btn btn-ghost" id="addToWishlist">${ESH.icon('heart')}</button>
+        </div>
+        ${!p.unlimited_stock && p.type === 'physical' ? `<p class="text-muted mt-1" style="font-size:0.82rem;">${p.stock > 0 ? p.stock + ' pezzi disponibili' : 'Esaurito'}</p>` : ''}
+      </div>
+    </div>
+
+    <div class="mt-3">
+      <h3 class="mb-2">Recensioni (${r.data.rating_count})</h3>
+      ${r.data.reviews.length ? r.data.reviews.map(rv => `
+        <div class="glass mb-1" style="padding:1.1rem;">
+          <div class="flex justify-between">
+            <strong>${rv.user_name || 'Cliente'}</strong>
+            <span class="badge badge-warning">&#9733; ${rv.rating}</span>
+          </div>
+          ${rv.verified_purchase ? '<span class="badge badge-success mt-1">Acquisto verificato</span>' : ''}
+          <p class="text-muted mt-1">${rv.comment || ''}</p>
+        </div>`).join('') : '<p class="text-muted">Nessuna recensione ancora.</p>'}
+    </div>`;
+
+    document.getElementById('addToCart').addEventListener('click', () => {
+      if (!p.unlimited_stock && p.type === 'physical' && p.stock <= 0) return ESH.toast('Prodotto esaurito.', 'error');
+      ESH.cart.add(p, 1); ESH.toast('Aggiunto al carrello.', 'success');
+    });
+    document.getElementById('addToWishlist').addEventListener('click', async () => {
+      const res = await ESH.api('/api/my/wishlist/' + p.id, { method: 'POST' });
+      ESH.toast(res.ok ? 'Aggiunto alla wishlist.' : 'Accedi per usare la wishlist.', res.ok ? 'success' : 'error');
+    });
+  }
+  load();
+</script>
+</body>
+</html>

@@ -1,0 +1,16 @@
+.cache
+.codex
+.claude
+.cursor
+.gemini
+.vscode
+.fly
+node_modules
+data
+update_payments.js
+deploy.py
+package-lock.json
+*.py
+.env
+.vscode-shared
+.antigravity-ide

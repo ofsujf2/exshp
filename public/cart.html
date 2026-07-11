@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Carrello — ExecutiveShop</title>
+<link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+<div id="app-nav"></div>
+<div class="container section" style="padding-top:6.5rem;">
+  <h1 class="mb-3">Il tuo carrello</h1>
+  <div class="hero-grid" style="align-items:flex-start;">
+    <div id="cartItems"></div>
+    <aside class="glass summary-card" id="cartSummary"></aside>
+  </div>
+</div>
+<div id="app-footer"></div>
+<script src="/js/api.js"></script>
+<script src="/js/store.js"></script>
+<script src="/js/layout.js"></script>
+<script>
+  ESH.layout('/cart.html');
+
+  function render() {
+    const items = ESH.cart.get();
+    const itemsEl = document.getElementById('cartItems');
+    if (!items.length) {
+      itemsEl.innerHTML = `<div class="glass" style="padding:2.4rem; text-align:center;"><h3>Il carrello e vuoto</h3><a href="/products.html" class="btn btn-primary mt-2">Sfoglia il catalogo</a></div>`;
+    } else {
+      itemsEl.innerHTML = items.map(i => `
+        <div class="glass flex justify-between items-center mb-1" style="padding:1.1rem 1.4rem;">
+          <div>
+            <div style="font-weight:600;">${i.title}</div>
+            <div class="text-muted" style="font-size:0.8rem;">${i.type === 'digital' ? 'Bene digitale' : 'Prodotto fisico'} &middot; ${ESH.formatPrice(i.price)}</div>
+          </div>
+          <div class="flex items-center gap-2">
+            <input type="number" min="1" value="${i.qty}" data-qty="${i.product_id}" style="width:70px; text-align:center;">
+            <button class="icon-btn" data-remove="${i.product_id}">&times;</button>
+          </div>
+        </div>`).join('');
+    }
+    document.getElementById('cartSummary').innerHTML = `
+      <h3 class="mb-2">Totale</h3>
+      <div class="summary-item"><span>Subtotale</span><span>${ESH.formatPrice(ESH.cart.subtotal())}</span></div>
+      <div class="summary-item total"><span>Da pagare</span><span>${ESH.formatPrice(ESH.cart.subtotal())}</span></div>
+      <a href="/checkout.html" class="btn btn-primary btn-block mt-2" ${items.length ? '' : 'style="pointer-events:none; opacity:0.5;"'}>Vai al checkout</a>`;
+
+    document.querySelectorAll('[data-qty]').forEach(inp => inp.addEventListener('change', () => { ESH.cart.updateQty(Number(inp.dataset.qty), Number(inp.value)); render(); }));
+    document.querySelectorAll('[data-remove]').forEach(btn => btn.addEventListener('click', () => { ESH.cart.remove(Number(btn.dataset.remove)); render(); }));
+  }
+  render();
+</script>
+</body>
+</html>

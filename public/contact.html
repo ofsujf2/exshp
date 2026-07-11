@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Contatti — ExecutiveShop</title>
+<link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+<div id="app-nav"></div>
+<div class="page-header container">
+  <div class="breadcrumbs"><a href="/">Home</a> / Contattaci</div>
+  <h1>Contattaci</h1>
+</div>
+<div class="container section-sm" style="padding-top:0; max-width:820px;">
+
+<div class="glass" style="padding:1.8rem;">
+  <div class="field"><label>Nome</label><input id="cName"></div>
+  <div class="field"><label>Email</label><input type="email" id="cEmail"></div>
+  <div class="field"><label>Messaggio</label><textarea id="cMsg" rows="4"></textarea></div>
+  <button class="btn btn-primary" id="cSend">Invia messaggio</button>
+  <p class="text-muted mt-1" style="font-size:0.8rem;">Demo: nessun invio email reale in questo ambiente (richiede configurazione SMTP).</p>
+</div>
+<script>document.addEventListener("DOMContentLoaded",()=>{const b=document.getElementById("cSend"); if(b) b.addEventListener("click",()=>{ESH.toast("Messaggio inviato (demo).","success");});});</script>
+
+</div>
+<div id="app-footer"></div>
+<script src="/js/api.js"></script>
+<script src="/js/store.js"></script>
+<script src="/js/layout.js"></script>
+<script>ESH.layout('/contact.html');</script>
+</body>
+</html>

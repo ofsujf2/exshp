@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Checkout — ExecutiveShop</title>
+<link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+<div id="app-nav"></div>
+
+<div class="container checkout-shell">
+  <div>
+    <div class="checkout-steps-wrap"></div>
+    <div id="stepContent"></div>
+  </div>
+  <aside id="summaryCard"></aside>
+</div>
+
+<div style="height:4rem"></div>
+<div id="app-footer"></div>
+
+<script src="/js/api.js"></script>
+<script src="/js/store.js"></script>
+<script src="/js/layout.js"></script>
+<script>
+  ESH.layout('/checkout.html').then(user => { window.__eshUser = user; });
+</script>
+<script src="/js/checkout.js"></script>
+</body>
+</html>

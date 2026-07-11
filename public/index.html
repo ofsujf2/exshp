@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ExecutiveShop — Digital & Physical Goods</title>
+<link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+<div id="app-nav"></div>
+
+<header class="hero">
+  <div class="hero-glow"></div>
+  <div class="container hero-grid">
+    <div>
+      <span class="eyebrow">Nuova generazione di eCommerce</span>
+      <h1 class="mt-1">Vendi beni digitali e fisici <span class="grad">in un'unica piattaforma</span></h1>
+      <p class="lead mt-1">Licenze software, corsi, elettronica e accessori. Pagamenti con carta, PayPal, Revolut e crypto (BTC, LTC, ETH). Consegna automatica per i prodotti digitali.</p>
+      <div class="hero-cta">
+        <a href="/products.html" class="btn btn-primary">Esplora il catalogo</a>
+        <a href="/about.html" class="btn btn-ghost">Scopri di piu</a>
+      </div>
+      <div class="hero-stats">
+        <div class="stat"><b id="statProducts">—</b><span>Prodotti disponibili</span></div>
+        <div class="stat"><b>4</b><span>Metodi di pagamento</span></div>
+        <div class="stat"><b>24/7</b><span>Consegna digitale</span></div>
+      </div>
+    </div>
+    <div class="hero-visual">
+      <div class="glass-strong hero-card tilt">
+        <div class="flex justify-between items-center mb-2">
+          <span class="badge badge-blue">Ordine #ESH-20260710-A1B2</span>
+          <span class="badge badge-success">Pagato</span>
+        </div>
+        <div class="row"><span class="text-muted">Licenza Pro Suite 2026</span><span>&euro;69,00</span></div>
+        <div class="row"><span class="text-muted">Cuffie Executive ANC</span><span>&euro;149,00</span></div>
+        <div class="row"><span class="text-muted">Spedizione</span><span>Gratuita</span></div>
+        <div class="row"><strong>Totale</strong><strong>&euro;265,78</strong></div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<section class="section">
+  <div class="container">
+    <div class="section-head">
+      <div><span class="eyebrow">Categorie</span><h2>Cosa stai cercando?</h2></div>
+      <a href="/categories.html" class="btn btn-ghost btn-sm">Vedi tutte</a>
+    </div>
+    <div class="grid grid-4" id="categoryGrid"></div>
+  </div>
+</section>
+
+<section class="section-sm">
+  <div class="container">
+    <div class="section-head">
+      <div><span class="eyebrow">In evidenza</span><h2>Prodotti selezionati</h2></div>
+      <a href="/products.html" class="btn btn-ghost btn-sm">Tutto il catalogo</a>
+    </div>
+    <div class="grid grid-4" id="featuredGrid"></div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="section-head"><div><span class="eyebrow">Perche ExecutiveShop</span><h2>Pensato per essere affidabile</h2></div></div>
+    <div class="grid grid-3">
+      <div class="glass feature-card tilt">
+        <div class="icon-wrap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 13l4 4L19 7"/></svg></div>
+        <h3>Consegna automatica</h3>
+        <p class="text-muted mt-1">Le licenze software vengono assegnate subito dopo la conferma del pagamento.</p>
+      </div>
+      <div class="glass feature-card tilt">
+        <div class="icon-wrap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2.5" y="5" width="19" height="14" rx="2.5"/><path d="M2.5 9.5h19"/></svg></div>
+        <h3>Pagamenti flessibili</h3>
+        <p class="text-muted mt-1">Carta, PayPal, Revolut Pay, crypto (BTC/LTC/ETH) o bonifico: scegli tu.</p>
+      </div>
+      <div class="glass feature-card tilt">
+        <div class="icon-wrap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6l7-3Z"/></svg></div>
+        <h3>Supporto reale</h3>
+        <p class="text-muted mt-1">Ticket di assistenza con risposta dal nostro team, non un bot.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section-sm">
+  <div class="container">
+    <div class="glass-strong" style="padding:2.6rem; text-align:center;">
+      <h2>Resta aggiornato sui nuovi drop</h2>
+      <p class="text-muted mt-1">Iscriviti per ricevere in anteprima nuove licenze, corsi e offerte.</p>
+      <form class="flex gap-1 mt-2" style="max-width:420px; margin:0 auto;" id="newsletterForm">
+        <input type="email" placeholder="La tua email" required>
+        <button class="btn btn-primary">Iscriviti</button>
+      </form>
+    </div>
+  </div>
+</section>
+
+<div id="app-footer"></div>
+
+<script src="/js/api.js"></script>
+<script src="/js/store.js"></script>
+<script src="/js/layout.js"></script>
+<script>
+  ESH.layout('/');
+
+  const CAT_ICONS = {
+    'software-licenze': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="4" y="5" width="16" height="11" rx="2"/><path d="M9 20h6M12 16v4"/></svg>',
+    'corsi-digitali': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 6.5C4 5.7 4.7 5 5.5 5H12v14H5.5A1.5 1.5 0 0 1 4 17.5v-11Z"/><path d="M20 6.5c0-.8-.7-1.5-1.5-1.5H12v14h6.5c.8 0 1.5-.7 1.5-1.5v-11Z"/></svg>',
+    'elettronica': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="4" y="4" width="16" height="16" rx="3"/><circle cx="12" cy="12" r="3"/></svg>',
+    'accessori': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 3v4M12 17v4M3 12h4M17 12h4"/><circle cx="12" cy="12" r="4.2"/></svg>'
+  };
+  const PRODUCT_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M21 8l-9-5-9 5 9 5 9-5Z"/><path d="M3 8v8l9 5 9-5V8"/><path d="M12 13v8"/></svg>';
+
+  function productCard(p) {
+    const price = p.discount_price ?? p.price;
+    return `
+    <a href="/product.html?slug=${p.slug}" class="glass product-card tilt">
+      <div class="product-thumb">${PRODUCT_ICON}</div>
+      <div class="product-info">
+        <h4>${p.title}</h4>
+        <div class="product-meta">
+          <span class="price">${p.discount_price ? `<span class="old">${ESH.formatPrice(p.price)}</span>` : ''}${ESH.formatPrice(price)}</span>
+          <span class="badge ${p.type === 'digital' ? 'badge-blue' : 'badge-muted'}">${p.type === 'digital' ? 'Digitale' : 'Fisico'}</span>
+        </div>
+      </div>
+    </a>`;
+  }
+
+  (async function loadHome() {
+    const [cats, featured, all] = await Promise.all([
+      ESH.api('/api/categories'), ESH.api('/api/products?featured=1'), ESH.api('/api/products')
+    ]);
+    if (cats.ok) {
+      document.getElementById('categoryGrid').innerHTML = cats.data.categories.map(c => `
+        <a href="/products.html?category=${c.slug}" class="glass feature-card tilt text-center">
+          <div class="icon-wrap" style="margin:0 auto 1rem;">${CAT_ICONS[c.slug] || PRODUCT_ICON}</div>
+          <h4>${c.name}</h4>
+        </a>`).join('');
+    }
+    if (featured.ok) document.getElementById('featuredGrid').innerHTML = (featured.data.products.slice(0, 4).map(productCard).join('')) || '<p class="text-muted">Nessun prodotto in evidenza al momento.</p>';
+    if (all.ok) document.getElementById('statProducts').textContent = all.data.products.length;
+  })();
+
+  document.getElementById('newsletterForm').addEventListener('submit', (e) => {
+    e.preventDefault(); ESH.toast('Iscrizione registrata (demo, nessun invio email reale in questo ambiente).', 'success'); e.target.reset();
+  });
+</script>
+</body>
+</html>

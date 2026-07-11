@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin — ExecutiveShop</title>
+<link rel="stylesheet" href="../css/style.css">
+<style>
+  body{ display:flex; }
+  .admin-sidebar{
+    width:230px; min-height:100vh; padding:1.6rem 1rem; border-right:1px solid var(--border-soft);
+    position:fixed; top:0; left:0; bottom:0; background:rgba(9,9,9,0.6); backdrop-filter:blur(16px); z-index:50;
+  }
+  .admin-sidebar .nav-logo{ padding:0 0.6rem; margin-bottom:2rem; }
+  .admin-nav a{
+    display:flex; align-items:center; gap:0.7rem; padding:0.65rem 0.8rem; border-radius:10px;
+    color:var(--muted); font-size:0.88rem; font-weight:500; margin-bottom:0.2rem;
+  }
+  .admin-nav a svg{ width:17px; height:17px; }
+  .admin-nav a:hover{ background:var(--panel); color:var(--text); }
+  .admin-nav a.active{ background:rgba(59,109,255,0.12); color:var(--blue-2); }
+  .admin-main{ margin-left:230px; flex:1; padding:2.2rem clamp(1.4rem,3vw,3rem); width:100%; }
+  .stat-card{ padding:1.4rem; }
+  .stat-card b{ font-size:1.7rem; display:block; margin-top:0.3rem; }
+  @media (max-width:900px){ .admin-sidebar{ display:none; } .admin-main{ margin-left:0; } }
+</style>
+</head>
+<body>
+<aside class="admin-sidebar">
+  <a href="/" class="nav-logo"><span class="dot"></span>ExecutiveShop</a>
+  <nav class="admin-nav" id="adminNav">
+    <a data-section="dashboard" class="active">Dashboard</a>
+    <a data-section="products">Prodotti</a>
+    <a data-section="orders">Ordini</a>
+    <a data-section="coupons">Coupon</a>
+    <a data-section="wallets">Wallet Crypto</a>
+    <a data-section="gateways">Metodi di pagamento</a>
+    <a data-section="apiproviders">API Provider</a>
+    <a data-section="reviews">Recensioni</a>
+    <a data-section="tickets">Ticket</a>
+    <a data-section="settings">Impostazioni</a>
+  </nav>
+  <hr class="divider">
+  <button class="btn btn-ghost btn-sm w-full" id="logoutBtn">Esci</button>
+</aside>
+
+<main class="admin-main" id="adminMain">
+  <div class="skeleton" style="height:300px;"></div>
+</main>
+
+<script src="../js/api.js"></script>
+<script src="../js/admin.js"></script>
+</body>
+</html>

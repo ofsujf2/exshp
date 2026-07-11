@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Verifica pagamento — ExecutiveShop</title>
+<link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+<div id="app-nav"></div>
+<div class="auth-shell">
+  <div class="glass-strong auth-card text-center" id="returnCard">
+    <div class="spinner" style="margin:0 auto 1.2rem;"></div>
+    <h2>Verifica del pagamento in corso...</h2>
+    <p class="text-muted mt-1">Non chiudere questa pagina.</p>
+  </div>
+</div>
+<div id="app-footer"></div>
+<script src="/js/api.js"></script>
+<script src="/js/store.js"></script>
+<script src="/js/layout.js"></script>
+<script>
+  ESH.layout('/checkout.html');
+
+  (async function () {
+    const params = new URLSearchParams(location.search);
+    const gateway = params.get('gateway');
+    const orderNumber = params.get('order') || sessionStorage.getItem('esh_pending_order');
+    const card = document.getElementById('returnCard');
+
+    let body = { order_number: orderNumber };
+    if (gateway === 'stripe') body.session_id = params.get('session_id');
+    if (gateway === 'paypal') body.paypal_order_id = params.get('token'); // PayPal aggiunge ?token=ORDER_ID al ritorno
+
+    const r = await ESH.api(`/api/checkout/confirm/${gateway}`, { method: 'POST', body });
+    sessionStorage.removeItem('esh_pending_order');
+
+    if (r.ok && r.data.paid) {
+      card.innerHTML = `
+        <div class="success-icon" style="margin:0 auto 1.2rem;"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M5 13l4 4L19 7"/></svg></div>
+        <h2>Pagamento confermato</h2>
+        <p class="text-muted mt-1">Ordine ${r.data.order_number || orderNumber}</p>
+        <a href="/dashboard.html" class="btn btn-primary mt-3">Vai al tuo account</a>`;
+    } else {
+      card.innerHTML = `
+        <h2>Pagamento in verifica</h2>
+        <p class="text-muted mt-1">${(r.data && r.data.error) || r.error || 'Il pagamento non risulta ancora confermato dal gateway. Se hai completato il pagamento, lo staff lo confermera a breve, oppure ricarica questa pagina tra qualche istante.'}</p>
+        <a href="/dashboard.html" class="btn btn-ghost mt-3">Vai al tuo account</a>`;
+    }
+  })();
+</script>
+</body>
+</html>
